@@ -2,9 +2,10 @@ import React from "react";
 import CartItem from "./CartItem";
 import {useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../features/cart/cartSlide";
+import { openModal } from "../features/modal/modalSlice";
 
 const CartContainer = () => {
-    const {cartItems, total, amount} = useSelector((store)=> store.cart)
+    const {cartItems, total, amount} = useSelector((store)=> store.cart) 
     // console.log({cartItems, total, amount})
     const dispatch = useDispatch();
     if(amount < 1){
@@ -32,10 +33,10 @@ const CartContainer = () => {
                 <hr />
                 <div className="cart-total">
                     <h4>
-                        total <span>${total}</span>
+                        total <span>${total.toFixed(2)}</span>
                     </h4>
                 </div>
-                <button className="btn clear-btn" onClick={()=>dispatch(clearCart())}>clear cart</button>
+                <button className="btn clear-btn" onClick={()=>dispatch(openModal())}>clear cart</button>
             </footer>
         </section>
     );
