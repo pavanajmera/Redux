@@ -1,11 +1,29 @@
-import { createSlice } from "@reduxjs/toolkit";
-import cartItems from '../../cartItems';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+// import cartItems from '../../cartItems';
+
+const url ="https://course-api.com/react-useReducer-cart-project"
+// Replacing import cartItems from '../../cartItems'; with API
 const initialState = {
-    cartItems: cartItems,
+    cartItems: [],
+    // cartItems: cartItems,
     amount: 1,
     total: 0,
     isLoading: true,
-}
+};
+
+export const getCartItems = createAsyncThunk('cart/getCartItems', 
+    async(name, thunkAPI)=>{
+    try {
+        // console.log({name, thunkAPI});
+        // console.log(thunkAPI.getState());
+        const resp = await axios(url);
+        // console.log(resp);
+        return resp.data
+    } catch (error) {
+        return thunkAPI.rejectWithValue('some thing went wrong')
+    }
+})
 
 const cartSlice = createSlice({
     name: 'cart',
@@ -36,7 +54,38 @@ const cartSlice = createSlice({
             state.amount = amount
             state.total = total
         }
-    }
+    },
+    extraReducers : (builder) => {
+        builder.addCase(getCartItems.pending, (state) =>{
+            state.isLoading = true
+        }).addCase(
+            getCartItems.fulfilled, (state,action) =>{
+                // console.log(action);
+                state.isLoading = false
+                state.cartItems = action.payload
+            }
+        ).addCase(
+            getCartItems.rejected, (state, action) =>{
+                // console.log(action);
+                state.isLoading = false
+            },
+        )
+    },
+    // * Secondary approach but you will get build error in console
+    // extraReducers :  {
+    //     [getCartItems.pending] : (state) =>{
+    //         state.isLoading = true
+    //     },
+    //     [getCartItems.fulfilled] : (state,action) =>{
+    //         // console.log(action);
+    //         state.isLoading = false
+    //         state.cartItems = action.payload
+    //     },
+    //     [getCartItems.rejected] : (state, action) =>{
+    //         // console.log(action);
+    //         state.isLoading = false
+    //     },
+    // }
 })
 
 // console.log(cartSlice);
